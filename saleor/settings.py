@@ -363,3 +363,6 @@ GRAPHENE = {
     'SCHEMA_OUTPUT': os.path.join(
         PROJECT_ROOT, 'saleor', 'static', 'schema.json')
 }
+
+
+VATLAYER_ACCESS_KEY = os.environ.get('VATLAYER_ACCESS_KEY', '')
