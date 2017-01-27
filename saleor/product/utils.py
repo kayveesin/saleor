@@ -1,8 +1,5 @@
 from collections import namedtuple
 
-from django.conf import settings
-from django_prices_vatlayer.utils import get_tax_for_country
-
 from django.contrib.auth.models import AnonymousUser
 from django_prices.templatetags import prices_i18n
 
@@ -183,17 +180,3 @@ def price_range_as_dict(price_range):
         return None
     return {'maxPrice': price_as_dict(price_range.max_price),
             'minPrice': price_as_dict(price_range.min_price)}
-
-
-def get_variant_price_with_vat(variant, country_code):
-    variant_price = variant.get_price_per_item()
-    vat_rate_type = variant.product.product_class.vat_rate_type
-
-    if not settings.VATLAYER_ACCESS_KEY:
-        return variant_price
-
-    vat_rate_modifier = get_tax_for_country(country_code, vat_rate_type)
-    if vat_rate_modifier is None:
-        return variant_price
-
-    return vat_rate_modifier.apply(variant_price)
