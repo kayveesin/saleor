@@ -264,7 +264,7 @@ class Sale(models.Model):
                     return True
         return False
 
-    def modifier_for_variant(self, variant):
+    def modifier_for_variant(self, variant, **kwargs):
         discounted_products = [p.pk for p in self.products.all()]
         discounted_categories = list(self.categories.all())
         if discounted_products and variant.product.pk not in discounted_products:
