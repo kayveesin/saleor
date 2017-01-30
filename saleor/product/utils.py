@@ -121,8 +121,10 @@ def products_for_cart(user):
     return products
 
 
-def get_variant_picker_data(product, discounts=None, local_currency=None):
-    availability = get_availability(product, discounts, local_currency)
+def get_variant_picker_data(product, discounts=None, local_currency=None,
+                            country=None):
+    availability = get_availability(product, discounts, local_currency,
+                                    country=country)
     variants = product.variants.all()
     data = {'variantAttributes': [], 'variants': []}
 
@@ -136,8 +138,8 @@ def get_variant_picker_data(product, discounts=None, local_currency=None):
                        for value in attribute.values.all()]})
 
     for variant in variants:
-        price = variant.get_price_per_item(discounts)
-        price_undiscounted = variant.get_price_per_item()
+        price = variant.get_price_per_item(discounts, country=country)
+        price_undiscounted = variant.get_price_per_item(country=country)
         if local_currency:
             price_local_currency = to_local_currency(price, local_currency)
         else:
