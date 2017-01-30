@@ -43,9 +43,11 @@ def get_product_images(product):
     return list(product.images.all())
 
 
-def products_with_availability(products, discounts, local_currency):
+def products_with_availability(products, discounts, local_currency,
+                               country=None):
     for product in products:
-        yield product, get_availability(product, discounts, local_currency)
+        yield product, get_availability(product, discounts, local_currency,
+                                        country)
 
 
 ProductAvailability = namedtuple(
@@ -54,7 +56,8 @@ ProductAvailability = namedtuple(
         'price_range_local_currency', 'discount_local_currency'))
 
 
-def get_availability(product, discounts=None, local_currency=None):
+def get_availability(product, discounts=None, local_currency=None,
+                     country=None):
     if not product.variants.exists():
         return ProductAvailability(
             available=False,
@@ -65,8 +68,8 @@ def get_availability(product, discounts=None, local_currency=None):
             discount_local_currency=None)
 
     # In default currency
-    price_range = product.get_price_range(discounts=discounts)
-    undiscounted = product.get_price_range()
+    price_range = product.get_price_range(discounts=discounts, country=country)
+    undiscounted = product.get_price_range(country=country)
     if undiscounted.min_price > price_range.min_price:
         discount = undiscounted.min_price - price_range.min_price
     else:
