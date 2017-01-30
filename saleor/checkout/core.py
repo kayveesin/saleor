@@ -271,7 +271,8 @@ class Checkout(object):
                 shipping_price=shipping_price,
                 shipping_method_name=shipping_method_name)
             group.add_items_from_partition(
-                partition, discounts=self.cart.discounts)
+                partition, discounts=self.cart.discounts,
+                country=self._vat_country())
 
         if voucher is not None:
             Voucher.objects.increase_usage(voucher)
