@@ -1,5 +1,6 @@
 from django.conf import settings
 
+from ..cart.forms import CountryForm
 from ..product.models import Category
 
 
@@ -25,3 +26,7 @@ def categories(request):
 
 def search_enabled(request):
     return {'SEARCH_IS_ENABLED': bool(settings.SEARCH_BACKENDS)}
+
+
+def country_form(request):
+    return {'country_form': CountryForm(initial={'country': request.country})}
