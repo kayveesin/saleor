@@ -247,7 +247,7 @@ class ProductVariant(models.Model, Item):
                 get_variant_discounts(self, discounts, **kwargs))
             if discounts:
                 price = min(price | discount for discount in discounts)
-        if country:
+        if country and settings.VATLAYER_ACCESS_KEY:
             rate_name = self.product.product_class.vat_rate_type
             vat = get_tax_for_country(country, rate_name)
             if vat:
