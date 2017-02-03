@@ -6,7 +6,7 @@ import SaleImg from '../../../images/sale_bg.svg';
 const ProductPrice = ({ availability, price }) => {
   const { discount, priceRange } = availability;
   const isPriceRange = priceRange && priceRange.minPrice.gross !== priceRange.maxPrice.gross;
-  const gross = isPriceRange ? priceRange.minPrice.grossLocalized : price.grossLocalized;
+  const gross = priceRange.minPrice.grossLocalized;
   return (
     <div>
       <span itemProp="price">
