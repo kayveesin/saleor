@@ -33,9 +33,15 @@ if os.environ.get('REDIS_URL'):
         'LOCATION': os.environ.get('REDIS_URL')}
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgres://saleor:saleor@localhost:5432/saleor',
-        conn_max_age=600)}
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'peepalfarm',
+        'USER': 'postgres',
+        'PASSWORD': '19sep1991',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
 
 
 TIME_ZONE = 'America/Chicago'
