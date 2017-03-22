@@ -39,10 +39,24 @@
                             <h1>
                               {% trans "Pay for order" %} {{ order }}
                             </h1>
-                            <form method="post" action="{% url "order:payment" token=order.token %}" class="payment-method-form radio">
+{#                            <form method="post" action="{% url "order:payment" token=order.token %}" class="payment-method-form radio">#}
+                            <form method="post" action="{{ formUrl }}" class="payment-method-form radio">
                               {% csrf_token %}
                               {{ payment_form }}
                               {% block form_submit %}
+
+                                  <input name="key" value="{{ posted.key }}" />
+                                  <input name="txnid" value="{{ posted.txnid }}" />
+                                  <input name="amount" value="{{ posted.amount|default:'' }}" />
+                                  <input name="productinfo" value="{{ posted.productinfo|default:'' }}" />
+                                  <input name="firstname" value="{{ posted.firstname|default:'' }}" />
+                                  <input name="email" value="{{ posted.email|default:'' }}" />
+                                  <input name="phone" value="{{ posted.phone|default:'' }}" />
+                                  <input name="surl" value="{{ posted.surl }}" size="64" />
+                                  <input name="furl" value="{{ posted.furl }}" size="64" />
+                                  <input name="service_provider" value="payu_paisa" size="64" />
+                                  <input name="hash" value="{{ posted.hash }}"/>
+
                                     <button type="submit" class="btn primary">
                                         {% trans "Proceed to payment" %}
                                     </button>

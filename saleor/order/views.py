@@ -9,7 +9,7 @@ from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext as _
-
+from hashlib import sha512
 from payments import RedirectNeeded
 from .forms import PaymentDeleteForm, PaymentMethodsForm, PasswordForm
 from .models import Order, Payment
@@ -19,6 +19,22 @@ from ..userprofile.models import User
 
 logger = logging.getLogger(__name__)
 
+KEYS = ('key', 'txnid', 'amount', 'productinfo', 'firstname', 'email',
+        'udf1', 'udf2', 'udf3', 'udf4', 'udf5', 'udf6', 'udf7', 'udf8',
+        'udf9', 'udf10')
+
+def generate_hash(data):
+    keys = ('key', 'txnid', 'amount', 'productinfo', 'firstname', 'email',
+            'udf1', 'udf2', 'udf3', 'udf4', 'udf5',  'udf6',  'udf7', 'udf8',
+            'udf9',  'udf10')
+    # hash = sha512('')
+    # for key in KEYS:
+    #     hash.update("%s%s" % (str(data.get(key, '')), '|'))
+    payu_salt = settings.PAYU_MERCHANT_SALT
+    hashString = data['key']+'|'+ data['txnid'] +'|' +data['amount'] +'|' +data['productinfo'] +'|' + data['firstname'] +'|'+ data['email'] +'| | | | | | | | | | |'+ payu_salt
+    hash = sha512(hashString)
+    # hash.update(payu_salt)
+    return hash.hexdigest()
 
 def details(request, token):
     orders = Order.objects.prefetch_related('groups__items')
@@ -28,8 +44,30 @@ def details(request, token):
                             {'order': order, 'groups': groups})
 
 
-def payment(request, token):
+def preparePostedObject(order):
+    posted = {};
+    posted['key'] = settings.PAYU_MERCHANT_KEY
+    posted['txnid'] = 'transactione34vrx'
+    posted['amount'] = '100'
+    posted['productinfo'] = 'info'
+    posted['firstname'] = 'karan'
+    posted['email'] = 'karan91@gmail.com'
+    posted['phone'] = '9810229849'
+    posted['surl'] = 'local.saleor.com'
+    posted['furl'] = 'local.saleor.com'
+
+    hashKey = generate_hash(posted)
+
+    posted['hash'] = hashKey
+    return posted
+
+
+
+
+
+def payment(request,token,*args,**kwargs):
     orders = Order.objects.prefetch_related('groups__items')
+    # token = args
     order = get_object_or_404(orders, token=token)
     groups = order.groups.all()
     payments = order.payments.all()
@@ -51,11 +89,18 @@ def payment(request, token):
         # FIXME: redirect if there is only one payment method
         if payment_form.is_valid():
             payment_method = payment_form.cleaned_data['method']
-            return redirect('order:payment', token=order.token,
-                            variant=payment_method)
+            return redirect('https://secure.payu.in/_payment', permanent=False, *args, **kwargs)
+                            # token=order.token,
+                            # variant=payment_method)
+
+    posted = preparePostedObject(order)
+
+    # return redirect('https://test.payu.in/_payment',permanent=False,)
+
     return TemplateResponse(request, 'order/payment.html',
-                            {'order': order, 'groups': groups,
+                            {'order': order, 'groups': groups,'posted':posted,
                              'payment_form': payment_form,
+                             'formUrl':'https://secure.payu.in/_payment',
                              'waiting_payment': waiting_payment,
                              'waiting_payment_form': waiting_payment_form,
                              'payments': payments})

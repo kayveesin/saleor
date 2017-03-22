@@ -36,7 +36,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'peepalfarm',
-        'USER': 'karan',
+        'USER': 'postgres',
         'PASSWORD': '19sep1991',
         'HOST': 'localhost',
         'PORT': '',
@@ -163,6 +163,7 @@ INSTALLED_APPS = [
     'saleor.shipping',
     'saleor.search',
     'saleor.data_feeds',
+    'saleor.payUMoney',
 
     # External apps
     'versatileimagefield',
@@ -180,6 +181,7 @@ INSTALLED_APPS = [
     'webpack_loader',
     'allauth',
     'allauth.account',
+    'payu'
 ]
 
 LOGGING = {
@@ -249,13 +251,22 @@ GOOGLE_ANALYTICS_TRACKING_ID = os.environ.get('GOOGLE_ANALYTICS_TRACKING_ID')
 PAYMENT_MODEL = 'order.Payment'
 
 PAYMENT_VARIANTS = {
-    'default': ('payments.dummy.DummyProvider', {})}
+    'default': ('payments.dummy.DummyProvider', {}),
+    'paypal': ('payments.paypal.PaypalProvider', {
+        'client_id': 'karan91@gmail.com',
+        'secret': 'iseedeadpeople',
+        'endpoint': 'https://api.sandbox.paypal.com',
+        'capture': False}),
+    'stripe': ('payments.stripe.StripeProvider', {
+        'secret_key': 'sk_test_JqiTcwufSx9z4WUGgkCZ5Hga',
+        'public_key': 'pk_test_OFasWjy3rvRTf4tykrw4AHn5'})
+}
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 CHECKOUT_PAYMENT_CHOICES = [
-    ('default', 'Dummy provider')]
+    ('default', 'Online payment'), ('paypal', 'PayPal'), ('stripe', "Stripe")]
 
 MESSAGE_TAGS = {
     messages.ERROR: 'danger'}
@@ -276,7 +287,7 @@ BOOTSTRAP3 = {
 
 TEST_RUNNER = ''
 
-ALLOWED_HOSTS = ['54.202.88.174']
+ALLOWED_HOSTS = ['localhost']
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -310,6 +321,13 @@ VERSATILEIMAGEFIELD_SETTINGS = {
     'create_images_on_demand': ast.literal_eval(
         os.environ.get('CREATE_IMAGES_ON_DEMAND', 'True')),
 }
+
+PAYU_MERCHANT_KEY = "uhqEeK73"
+
+PAYU_MERCHANT_SALT = "lIVEDJes3y"
+
+# Change the PAYU_MODE to 'LIVE' for production.
+PAYU_MODE = "TEST"
 
 WEBPACK_LOADER = {
     'DEFAULT': {
