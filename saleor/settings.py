@@ -164,6 +164,7 @@ INSTALLED_APPS = [
     'saleor.search',
     'saleor.data_feeds',
     'saleor.payUMoney',
+    'saleor.donation',
 
     # External apps
     'versatileimagefield',
